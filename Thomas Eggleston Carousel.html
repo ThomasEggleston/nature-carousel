@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style type="text/css">
+    body {
+    }
+    .carousel {
+      width: 800px;
+      height: 350px;
+      position: relative;
+      background-color: black;
+    }
+    .arrowContainer {
+      position: absolute;
+      margin-top: 130px;
+    }
+    .bullets {
+      position: absolute;
+      bottom: 0;
+      margin-left: 324px;
+      margin-bottom: 10px;
+      background-color: #c4c4c4;
+    }
+    #leftArrow {
+      width: 0;
+      height: 0;
+      margin-left: 20px;
+      background-color: black;
+      border-style: solid;
+      border-width: 50px 50px 50px 0;
+      border-color: transparent #c4c4c4 transparent transparent;
+    }
+    #leftArrow:active {
+      border-color: transparent yellow transparent transparent;
+    }
+    #rightArrow {
+      width: 0;
+      height: 0;
+      margin-right: 20px;
+      background-color: black;
+      border-style: solid;
+      border-width: 50px 0 50px 50px;
+      border-color: transparent transparent transparent #c4c4c4;
+    }
+    #rightArrow:active {
+      border-color: transparent transparent transparent yellow;
+    }
+    .imageContainer {
+      position: absolute;
+      margin-top: 50px;
+      margin-left: 110px;
+    }
+    .image {
+      position: absolute;
+    }
+    #bulletsForm {
+    }
+    input[type=radio]{
+      width: 20px;
+    }
+    input[type="radio"]:checked {
+      src: url("http://lorempixel.com/580/250/nature/1/");
+    }
+  </style>
+  <title>
+    Thomas Eggleston Carousel
+  </title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <script type="text/javascript">
+
+
+  (function () {
+    "use strict";
+
+  // GLOBALS
+    var images = [1,2,3,4,5], // Array containing image numbers
+        currentImage = 1,
+        currentBullet = 1,
+        autoSlide = setTimeout(rightTransition, 5000); // initialize timer
+
+    // Returns the value of the bullet which is currently selected.
+    function getSelectedBullet(e) {
+      var bullet = 1;
+      $(':radio').each(function (index) {
+        if (this.checked) {
+          bullet = images[index];
+        }
+      });
+      return bullet;
+    }
+
+    // Checks the radio button corresponding to the current image.
+    // Called when image is changed due to an arrow or timer.
+    function setBullet(e) {
+      $(':radio').each(function (index) {
+        if (index + 1 == currentImage) {
+          this.checked = 'true';
+          currentBullet = currentImage;
+        }
+      });
+    }
+
+    // Fades in the next image. Also creates a 5 second timer to automatically
+    // change the image. Each time the image is changed, the timer is reset.
+    function showImage(img, e) {
+      $('#image' + img).fadeIn(1800);
+      currentImage = img;
+      currentBullet = img;
+      clearTimeout(autoSlide);
+      autoSlide = setTimeout(rightTransition, 5000);
+    }
+
+    // Fades out the currently displayed image.
+    function hideImage(img, e) {
+      $('#image' + img).fadeOut(1800);
+    }
+
+    // Changes to the previous image. Called when the left arrow is clicked.
+    function leftTransition(e) {
+      hideImage(currentImage);
+      if (currentImage == images[0]) { // If the current image is the leftmost
+        currentImage = images.length; // image, then wrap around to the right.
+      } else {
+        currentImage--;
+      }
+      setBullet(currentImage);
+      showImage(currentImage);
+    }
+
+    // Changes to the next image. Called when the right arrow is clicked, or when
+    // the auto sliding timer has expired.
+    function rightTransition(e) {
+      hideImage(currentImage);
+      if (currentImage == images.length) { // If rightmost, then wrap around
+        currentImage = images[0];
+      } else {
+        currentImage++;
+      }
+      setBullet(currentImage);
+      showImage(currentImage);
+    }
+
+    // Called when a bullet is clicked. Changes the image to the one corresponding
+    // to the clicked bullet.
+    function bulletEvent(e) {
+      var newBullet = getSelectedBullet();
+      if (currentBullet != newBullet) { // Check whether a different bullet was clicked
+        hideImage(currentImage);
+        showImage(newBullet);
+        currentBullet = newBullet;
+      }
+    }
+
+    // Perform initialization tasks
+    $(document).ready(function () {
+      $('[id^=image]').hide(); // Hide all images
+
+      // Register arrows and bullets for clicks
+      $("#leftArrow").click(leftTransition);
+      $("#rightArrow").click(rightTransition);
+      $(":radio").click(bulletEvent);
+
+      var i = getSelectedBullet();
+      showImage(i);
+    });
+
+  }());
+
+
+  </script>
+</head>
+<body>
+  <div class="carousel">
+    <div class="arrowContainer" style="left: 0">
+      <button id="leftArrow"></button>
+    </div>
+    <div class="arrowContainer" style="right: 0">
+      <button id="rightArrow"></button>
+    </div>
+    <div class="bullets">
+      <form name="bulletsForm">
+        <input name="bullets" type="radio" value="1" checked>
+        <input name="bullets" type="radio" value="2">
+        <input name="bullets" type="radio" value="3">
+        <input name="bullets" type="radio" value="4">
+        <input name="bullets" type="radio" value="5">
+      </form>
+    </div>
+    <div class="imageContainer">
+      <img class="image" id="image1" src="assets/1.jpg">
+      <img class="image" id="image2" src="assets/2.jpg">
+      <img class="image" id="image3" src="assets/3.jpg">
+      <img class="image" id="image4" src="assets/4.jpg">
+      <img class="image" id="image5" src="assets/5.jpg">
+    </div>
+  </div>
+</body>
+</html>
